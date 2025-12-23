@@ -31,10 +31,27 @@
         "type": "github"
       }
     },
+    "plugins-none-ls-extras": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1765590566,
+        "narHash": "sha256-wo8vIK4X4hN7d15IcoeMHgd7OpYz6r0qJV11A+9PycA=",
+        "owner": "nvimtools",
+        "repo": "none-ls-extras.nvim",
+        "rev": "03955d165621300965a6d685c8f399ec7efd5785",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nvimtools",
+        "repo": "none-ls-extras.nvim",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "nixCats": "nixCats",
-        "nixpkgs": "nixpkgs"
+        "nixpkgs": "nixpkgs",
+        "plugins-none-ls-extras": "plugins-none-ls-extras"
       }
     }
   },
