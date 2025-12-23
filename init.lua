@@ -1,0 +1,12 @@
+require("config/options")
+
+require("plugins/catppuccin")
+require("plugins/neo-tree")
+require("plugins/noice")
+require("plugins/treesitter")
+require("plugins/telescope")
+require("plugins/alpha")
+require("plugins/auto-pairs")
+require("plugins/bufferline")
+require("plugins/lsp-config")
+require("plugins/lualine")

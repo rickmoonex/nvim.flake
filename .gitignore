@@ -1,0 +1,76 @@
+# =========================
+# Nix
+# =========================
+
+# Result symlinks from nix build / nix develop
+result
+result-*
+
+# Legacy nix-build outputs
+*.drv
+
+# Nix profile & channels (if someone still uses them locally)
+.nix-profile
+.nix-channels
+.nix-defexpr
+
+# Nix flakes
+.flake
+.flake.lock.bak
+
+# Nix GC roots (sometimes created by tools)
+.gcroots
+
+
+# =========================
+# Direnv (very common with flakes)
+# =========================
+.direnv/
+.envrc.local
+
+
+# =========================
+# macOS
+# =========================
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Finder & Spotlight
+.Spotlight-V100
+.Trashes
+.fseventsd
+
+# iCloud / APFS
+*.icloud
+
+# =========================
+# Editors & IDEs
+# =========================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+*.bak
+
+# Neovim
+.nvim/
+.nvimpager/
+
+# =========================
+# Logs & temp
+# =========================
+*.log
+tmp/
+temp/
+
+
+# =========================
+# Language / tooling caches (safe defaults)
+# =========================
+node_modules/
+dist/
+build/
+.cache/
+
