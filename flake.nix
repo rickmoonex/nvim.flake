@@ -77,11 +77,15 @@
       # this includes LSPs
       lspsAndRuntimeDeps = {
         general = with pkgs; [
+          # LSP
           typescript-language-server
           stylua
           prettierd
           eslint_d
           alejandra
+
+          # Runtime dev
+          ripgrep
         ];
       };
 
