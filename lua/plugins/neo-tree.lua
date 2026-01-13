@@ -4,6 +4,14 @@ require("neo-tree").setup({
 			pattern = "^package%.json$", -- <-- Lua pattern
 			files = { "package-lock.json", "yarn*" }, -- <-- glob pattern
 		},
+		["script_yaml_ts"] = {
+			pattern = "^(.*)%.ts$",
+			files = { "%1.script.yaml", "%1.script.lock" },
+		},
+		["script_yaml_py"] = {
+			pattern = "^(.*)%.py$",
+			files = { "%1.script.yaml", "%1.script.lock" },
+		},
 	},
 
 	event_handlers = {
@@ -15,5 +23,4 @@ require("neo-tree").setup({
 		},
 	},
 })
-
 vim.keymap.set("n", "<C-e>", ":Neotree filesystem reveal left toggle<CR>", { desc = "Toggle Neo-tree" })
