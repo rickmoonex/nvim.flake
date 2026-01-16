@@ -118,6 +118,8 @@
           friendly-snippets
           nvim-autopairs
           none-ls-nvim
+          render-markdown-nvim
+          mini-nvim
         ];
       };
 
