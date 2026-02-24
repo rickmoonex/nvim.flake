@@ -4,10 +4,6 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     nixCats.url = "github:BirdeeHub/nixCats-nvim";
-    "plugins-none-ls-extras" = {
-      url = "github:nvimtools/none-ls-extras.nvim";
-      flake = false;
-    };
   };
 
   # see :help nixCats.flake.outputs
@@ -80,8 +76,7 @@
           # LSP
           typescript-language-server
           stylua
-          prettierd
-          eslint_d
+          biome
           alejandra
 
           # Runtime dev
@@ -92,7 +87,6 @@
       # This is for plugins that will load at startup without using packadd:
       startupPlugins = {
         gitPlugins = with pkgs.neovimPlugins; [
-          none-ls-extras
         ];
         general = with pkgs.vimPlugins; [
           catppuccin-nvim
