@@ -1,14 +1,6 @@
-local configs = require("nvim-treesitter.configs")
-
-configs.setup({
-	auto_install = false,
-	highlight = {
-		enable = true,
-	},
-	indent = {
-		enable = true,
-	},
-})
+-- Treesitter highlight and indent are enabled by default in Neovim 0.11+.
+-- With nixCats, grammars are installed via Nix (nvim-treesitter.withAllGrammars),
+-- so no runtime install/setup is needed.
 
 vim.opt.foldmethod = "expr"
 vim.opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
