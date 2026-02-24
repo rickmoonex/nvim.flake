@@ -1,4 +1,3 @@
-vim.opt.termguicolors = true
 vim.keymap.set("n", "<C-[>", ":BufferLineCyclePrev<CR>", {})
 vim.keymap.set("n", "<C-]>", ":BufferLineCycleNext<CR>", {})
 vim.keymap.del("n", "<Esc>")
