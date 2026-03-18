@@ -78,6 +78,11 @@
           stylua
           biome
           alejandra
+          terraform-ls
+
+          # Linting
+          tflint
+          terraform
 
           # Runtime dev
           ripgrep
