@@ -330,18 +330,68 @@ vim.keymap.set("n", "<leader>oo", function()
 		:find()
 end, { desc = "Find orphan notes" })
 
--- Insert wiki-link via telescope note picker
+-- Extract headings from a file, skipping frontmatter
+local function get_headings(filepath)
+	local headings = {}
+	local lines = vim.fn.readfile(filepath)
+	local start = 1
+	if lines[1] == "---" then
+		for i = 2, #lines do
+			if lines[i] == "---" then
+				start = i + 1
+				break
+			end
+		end
+	end
+	for i = start, #lines do
+		local heading = lines[i]:match("^#+%s+(.+)$")
+		if heading then
+			table.insert(headings, heading)
+		end
+	end
+	return headings
+end
+
+-- Insert wiki-link via telescope note picker (notes + headings)
 vim.api.nvim_create_autocmd("FileType", {
 	pattern = "markdown",
 	callback = function(args)
 		vim.keymap.set("i", "[[", function()
 			local vault = vim.fn.expand(vault_path)
 			local files = vim.fn.globpath(vault, "**/*.md", false, true)
-			local notes = {}
-			for _, f in ipairs(files) do
-				table.insert(notes, vim.fn.fnamemodify(f, ":t:r"))
+			local current_file = vim.fn.expand("%:p")
+			local entries = {}
+
+			-- Current note headings from buffer (includes unsaved changes)
+			local buf_lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+			local start = 1
+			if buf_lines[1] == "---" then
+				for i = 2, #buf_lines do
+					if buf_lines[i] == "---" then
+						start = i + 1
+						break
+					end
+				end
 			end
-			table.sort(notes)
+			for i = start, #buf_lines do
+				local heading = buf_lines[i]:match("^#+%s+(.+)$")
+				if heading then
+					table.insert(entries, "#" .. heading)
+				end
+			end
+
+			-- All notes and their headings
+			for _, f in ipairs(files) do
+				local name = vim.fn.fnamemodify(f, ":t:r")
+				table.insert(entries, name)
+				if f ~= current_file then
+					for _, h in ipairs(get_headings(f)) do
+						table.insert(entries, name .. "#" .. h)
+					end
+				end
+			end
+
+			table.sort(entries)
 
 			local pickers = require("telescope.pickers")
 			local finders = require("telescope.finders")
@@ -352,7 +402,7 @@ vim.api.nvim_create_autocmd("FileType", {
 			pickers
 				.new({}, {
 					prompt_title = "Insert Link",
-					finder = finders.new_table({ results = notes }),
+					finder = finders.new_table({ results = entries }),
 					sorter = conf.generic_sorter({}),
 					attach_mappings = function(prompt_bufnr)
 						actions.select_default:replace(function()
