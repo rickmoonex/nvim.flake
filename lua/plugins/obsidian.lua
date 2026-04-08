@@ -1,3 +1,147 @@
+local vault_path = nixCats("obsidian.vault_path") or "~/Vault"
+local notes_subdir = nixCats("obsidian.notes_subdir") or "inbox"
+
+-- Save code snippet to vault as a new note (available in all modes)
+vim.keymap.set("v", "<leader>cs", function()
+	-- Capture selection before leaving visual mode
+	local start_line = vim.fn.line("v")
+	local end_line = vim.fn.line(".")
+	if start_line > end_line then
+		start_line, end_line = end_line, start_line
+	end
+	local lines = vim.api.nvim_buf_get_lines(0, start_line - 1, end_line, false)
+	local ft = vim.bo.filetype
+	local cwd = vim.fn.getcwd()
+	local cwd_name = vim.fn.fnamemodify(cwd, ":t")
+	local abs_file = vim.fn.expand("%:p")
+	local rel_path = abs_file:sub(#cwd + 2)
+	local source_path = cwd_name .. "/" .. rel_path
+
+	-- Leave visual mode and defer prompt so <Esc> doesn't land in the input
+	vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), "nx", false)
+
+	vim.schedule(function()
+	vim.ui.input({ prompt = "Snippet title: " }, function(title)
+		if not title or title == "" then
+			return
+		end
+
+		vim.ui.input({ prompt = "Summary: " }, function(summary)
+			if not summary then
+				summary = ""
+			end
+
+			local vault = vim.fn.expand(vault_path)
+			local subdir = vault .. "/" .. notes_subdir
+			local daily_folder_name = nixCats("obsidian.daily_notes_folder") or "daily"
+			local filename = title:lower():gsub(" ", "_")
+
+			-- Write the note
+			vim.fn.mkdir(subdir, "p")
+			local note_path = subdir .. "/" .. filename .. ".md"
+			local content = {
+				"---",
+				"tags:",
+				"  - snippet",
+				"---",
+				"",
+				"# " .. title,
+				"",
+			}
+			if summary ~= "" then
+				table.insert(content, summary)
+				table.insert(content, "")
+			end
+			table.insert(content, "Source: `" .. source_path .. "`")
+			table.insert(content, "")
+			table.insert(content, "```" .. ft)
+			for _, line in ipairs(lines) do
+				table.insert(content, line)
+			end
+			table.insert(content, "```")
+			table.insert(content, "")
+
+			vim.fn.writefile(content, note_path)
+			vim.notify("Snippet saved to " .. note_path, vim.log.levels.INFO)
+
+			-- Add journal entry to today's daily note
+			local daily_dir = vault .. "/" .. daily_folder_name
+			vim.fn.mkdir(daily_dir, "p")
+			local today = os.date("%Y-%m-%d")
+			local now = os.date("%H:%M")
+			local daily_path = daily_dir .. "/" .. today .. ".md"
+			local journal_entry = '- **' .. now .. '**: Created code snippet [[' .. filename .. ']]'
+
+			if vim.fn.filereadable(daily_path) == 0 then
+				vim.fn.writefile({
+					"---",
+					"done: false",
+					"---",
+					"",
+					"# " .. today,
+					"",
+					"## Tasks",
+					"",
+					"## Notes",
+					"",
+					"## Journal",
+					"",
+					"- **" .. now .. "**: Note created",
+					journal_entry,
+					"",
+				}, daily_path)
+			else
+				local daily_lines = vim.fn.readfile(daily_path)
+				local journal_idx = nil
+				local next_section = nil
+				for i, l in ipairs(daily_lines) do
+					if l == "## Journal" then
+						journal_idx = i
+					elseif journal_idx and not next_section and l:match("^## ") then
+						next_section = i
+					end
+				end
+				if journal_idx then
+					local insert_at = next_section or (#daily_lines + 1)
+					-- Walk back over blank lines
+					while insert_at > journal_idx + 1 and daily_lines[insert_at - 1] == "" do
+						insert_at = insert_at - 1
+					end
+					-- Add blank line if first entry
+					local has_content = false
+					for i = journal_idx + 1, insert_at - 1 do
+						if daily_lines[i] ~= "" then
+							has_content = true
+							break
+						end
+					end
+					if not has_content then
+						table.insert(daily_lines, insert_at, "")
+						insert_at = insert_at + 1
+						if next_section then
+							next_section = next_section + 1
+						end
+					end
+					table.insert(daily_lines, insert_at, journal_entry)
+					if next_section then
+						-- Ensure blank line before next section
+						if daily_lines[insert_at + 1] and daily_lines[insert_at + 1] ~= "" then
+							table.insert(daily_lines, insert_at + 1, "")
+						end
+					end
+				else
+					table.insert(daily_lines, "")
+					table.insert(daily_lines, "## Journal")
+					table.insert(daily_lines, "")
+					table.insert(daily_lines, journal_entry)
+				end
+				vim.fn.writefile(daily_lines, daily_path)
+			end
+		end)
+	end)
+	end)
+end, { desc = "Save code snippet to Obsidian" })
+
 if not vim.g.obsidian_mode then
 	return
 end
@@ -7,8 +151,6 @@ if not ok then
 	return
 end
 
-local vault_path = nixCats("obsidian.vault_path") or "~/Vault"
-local notes_subdir = nixCats("obsidian.notes_subdir") or "inbox"
 local config_dir = require("nixCats").configDir
 
 local setup_ok, err = pcall(obsidian.setup, {
@@ -46,7 +188,7 @@ if not setup_ok then
 end
 
 -- Obsidian command palette
-vim.keymap.set("n", "<C-o>", "<cmd>Obsidian<cr>", { desc = "Obsidian" })
+vim.keymap.set("n", "<leader>oc", "<cmd>Obsidian<cr>", { desc = "Obsidian commands" })
 
 -- Open today's daily note
 vim.keymap.set("n", "<leader>dd", "<cmd>Obsidian today<cr>", { desc = "Today's daily note" })
@@ -569,154 +711,13 @@ vim.keymap.set("v", "<leader>k", function()
 	end)
 end, { desc = "Wrap selection as markdown link with clipboard URL" })
 
--- Save code snippet to vault as a new note
-vim.keymap.set("v", "<leader>cs", function()
-	-- Capture selection before leaving visual mode
-	local start_line = vim.fn.line("v")
-	local end_line = vim.fn.line(".")
-	if start_line > end_line then
-		start_line, end_line = end_line, start_line
-	end
-	local lines = vim.api.nvim_buf_get_lines(0, start_line - 1, end_line, false)
-	local ft = vim.bo.filetype
-	local cwd = vim.fn.getcwd()
-	local cwd_name = vim.fn.fnamemodify(cwd, ":t")
-	local abs_file = vim.fn.expand("%:p")
-	local rel_path = abs_file:sub(#cwd + 2)
-	local source_path = cwd_name .. "/" .. rel_path
-
-	-- Leave visual mode and defer prompt so <Esc> doesn't land in the input
-	vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), "nx", false)
-
-	vim.schedule(function()
-	vim.ui.input({ prompt = "Snippet title: " }, function(title)
-		if not title or title == "" then
-			return
-		end
-
-		vim.ui.input({ prompt = "Summary: " }, function(summary)
-			if not summary then
-				summary = ""
-			end
-
-			local vault = vim.fn.expand(vault_path)
-			local subdir = vault .. "/" .. notes_subdir
-			local daily_folder = nixCats("obsidian.daily_notes_folder") or "daily"
-			local filename = title:lower():gsub(" ", "_")
-
-			-- Write the note
-			vim.fn.mkdir(subdir, "p")
-			local note_path = subdir .. "/" .. filename .. ".md"
-			local content = {
-				"---",
-				"tags:",
-				"  - snippet",
-				"---",
-				"",
-				"# " .. title,
-				"",
-			}
-			if summary ~= "" then
-				table.insert(content, summary)
-				table.insert(content, "")
-			end
-			table.insert(content, "Source: `" .. source_path .. "`")
-			table.insert(content, "")
-			table.insert(content, "```" .. ft)
-			for _, line in ipairs(lines) do
-				table.insert(content, line)
-			end
-			table.insert(content, "```")
-			table.insert(content, "")
-
-			vim.fn.writefile(content, note_path)
-			vim.notify("Snippet saved to " .. note_path, vim.log.levels.INFO)
-
-			-- Add journal entry to today's daily note
-			local daily_dir = vault .. "/" .. daily_folder
-			vim.fn.mkdir(daily_dir, "p")
-			local today = os.date("%Y-%m-%d")
-			local now = os.date("%H:%M")
-			local daily_path = daily_dir .. "/" .. today .. ".md"
-			local journal_entry = '- **' .. now .. '**: Created code snippet [[' .. filename .. ']]'
-
-			if vim.fn.filereadable(daily_path) == 0 then
-				vim.fn.writefile({
-					"---",
-					"done: false",
-					"---",
-					"",
-					"# " .. today,
-					"",
-					"## Tasks",
-					"",
-					"## Notes",
-					"",
-					"## Journal",
-					"",
-					"- **" .. now .. "**: Note created",
-					journal_entry,
-					"",
-				}, daily_path)
-			else
-				local daily_lines = vim.fn.readfile(daily_path)
-				local journal_idx = nil
-				local next_section = nil
-				for i, l in ipairs(daily_lines) do
-					if l == "## Journal" then
-						journal_idx = i
-					elseif journal_idx and not next_section and l:match("^## ") then
-						next_section = i
-					end
-				end
-				if journal_idx then
-					local insert_at = next_section or (#daily_lines + 1)
-					-- Walk back over blank lines
-					while insert_at > journal_idx + 1 and daily_lines[insert_at - 1] == "" do
-						insert_at = insert_at - 1
-					end
-					-- Add blank line if first entry
-					local has_content = false
-					for i = journal_idx + 1, insert_at - 1 do
-						if daily_lines[i] ~= "" then
-							has_content = true
-							break
-						end
-					end
-					if not has_content then
-						table.insert(daily_lines, insert_at, "")
-						insert_at = insert_at + 1
-						if next_section then
-							next_section = next_section + 1
-						end
-					end
-					table.insert(daily_lines, insert_at, journal_entry)
-					if next_section then
-						-- Ensure blank line before next section
-						if daily_lines[insert_at + 1] and daily_lines[insert_at + 1] ~= "" then
-							table.insert(daily_lines, insert_at + 1, "")
-						end
-					end
-				else
-					table.insert(daily_lines, "")
-					table.insert(daily_lines, "## Journal")
-					table.insert(daily_lines, "")
-					table.insert(daily_lines, journal_entry)
-				end
-				vim.fn.writefile(daily_lines, daily_path)
-			end
-		end)
-	end)
-	end)
-end, { desc = "Save code snippet to Obsidian" })
-
 -- Cheatsheet popup
 vim.keymap.set("n", "<leader>?", function()
 	local lines = {
 		" Obsidian Keybindings",
 		"",
 		" Navigation",
-		"  Ctrl+o         Obsidian command palette",
+		"  <leader>oc     Obsidian command palette",
 		"  <leader>l      Follow link / backlinks",
 		"  <leader>dd     Today's daily note",
 		"  <leader>dr     Unreviewed daily notes",
