@@ -87,6 +87,8 @@
 
           # Runtime dev
           ripgrep
+          pngpaste
+          imagemagick
         ];
       };
 
@@ -122,6 +124,11 @@
           mini-nvim
           obsidian-nvim
           outline-nvim
+          vim-table-mode
+          zen-mode-nvim
+          twilight-nvim
+          img-clip-nvim
+          image-nvim
         ];
       };
 
@@ -245,6 +252,11 @@
         nvim-obsidian = pkgs.writeShellScriptBin "nvim-obsidian" ''
           ${defaultPackage}/bin/nvim --cmd "let g:obsidian_mode=1" "$@"
         '';
+        obsidian-util = pkgs.writeShellApplication {
+          name = "obsidian-util";
+          runtimeInputs = with pkgs; [ coreutils gnused gnugrep ];
+          text = builtins.readFile ./scripts/obsidian-util.sh;
+        };
       };
 
       # choose your package for devShell

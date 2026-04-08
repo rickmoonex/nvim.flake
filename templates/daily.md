@@ -9,3 +9,4 @@
 
 ## Journal
 
+- **{{time}}**: Note created
