@@ -150,8 +150,11 @@ vim.api.nvim_create_autocmd({ "FocusLost", "BufLeave", "InsertLeave" }, {
 vim.api.nvim_create_autocmd("FileType", {
 	pattern = "markdown",
 	callback = function(args)
+		local spelldir = vim.fn.stdpath("data") .. "/spell"
+		vim.fn.mkdir(spelldir, "p")
 		vim.opt_local.spell = true
 		vim.opt_local.spelllang = "en"
+		vim.opt_local.spellfile = spelldir .. "/en.utf-8.add"
 
 		-- Jump between headings with [ and ]
 		vim.keymap.set("n", "]", function()
@@ -681,6 +684,13 @@ vim.keymap.set("n", "<leader>?", function()
 		"  <leader>z      Toggle Zen Mode",
 		"  <CR>           Auto-continue tasks/journal (insert)",
 		"  :TableModeToggle  Toggle table mode",
+		"",
+		" Spelling",
+		"  zg              Add word to dictionary",
+		"  zw              Mark word as wrong",
+		"  zug             Undo add to dictionary",
+		"  z=              Show suggestions",
+		"  ]s / [s         Next / previous misspelling",
 		"",
 		" Press q to close",
 	}
