@@ -1,3 +1,7 @@
+if not vim.g.obsidian_mode then
+	return
+end
+
 local ok, obsidian = pcall(require, "obsidian")
 if not ok then
 	return

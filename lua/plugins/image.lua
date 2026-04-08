@@ -1,3 +1,7 @@
+if not vim.g.obsidian_mode then
+	return
+end
+
 local ok, image = pcall(require, "image")
 if not ok then
 	return
