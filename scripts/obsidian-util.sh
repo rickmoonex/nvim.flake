@@ -70,6 +70,10 @@ ensure_daily() {
 
   if [[ ! -f "$file" ]]; then
     cat > "$file" <<TMPL
+---
+done: false
+---
+
 # ${today}
 
 ## Tasks

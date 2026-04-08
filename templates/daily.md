@@ -1,3 +1,7 @@
+---
+done: false
+---
+
 # {{date}}
 
 ## Tasks

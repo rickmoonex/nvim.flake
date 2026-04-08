@@ -47,6 +47,93 @@ vim.keymap.set("n", "<C-o>", "<cmd>Obsidian<cr>", { desc = "Obsidian" })
 -- Open today's daily note
 vim.keymap.set("n", "<leader>dd", "<cmd>Obsidian today<cr>", { desc = "Today's daily note" })
 
+-- Show unreviewed daily notes
+vim.keymap.set("n", "<leader>dr", function()
+	local vault = vim.fn.expand(vault_path)
+	local daily_dir = vault .. "/" .. (nixCats("obsidian.daily_notes_folder") or "daily")
+	local files = vim.fn.glob(daily_dir .. "/*.md", false, true)
+	local unreviewed = {}
+
+	for _, f in ipairs(files) do
+		local lines = vim.fn.readfile(f, "", 5)
+		local in_frontmatter = false
+		local is_done = false
+		for _, line in ipairs(lines) do
+			if line == "---" then
+				in_frontmatter = not in_frontmatter
+			elseif in_frontmatter and line:match("^done:%s*true") then
+				is_done = true
+				break
+			end
+		end
+		if not is_done then
+			table.insert(unreviewed, f)
+		end
+	end
+
+	table.sort(unreviewed)
+
+	local entries = {}
+	for _, f in ipairs(unreviewed) do
+		table.insert(entries, vim.fn.fnamemodify(f, ":t"))
+	end
+
+	local pickers = require("telescope.pickers")
+	local finders = require("telescope.finders")
+	local conf = require("telescope.config").values
+	local actions = require("telescope.actions")
+	local action_state = require("telescope.actions.state")
+
+	pickers
+		.new({}, {
+			prompt_title = "Unreviewed Daily Notes (" .. #entries .. ")",
+			finder = finders.new_table({ results = entries }),
+			sorter = conf.generic_sorter({}),
+			attach_mappings = function(prompt_bufnr)
+				actions.select_default:replace(function()
+					local selection = action_state.get_selected_entry()
+					actions.close(prompt_bufnr)
+					if selection then
+						vim.cmd("edit " .. vim.fn.fnameescape(daily_dir .. "/" .. selection[1]))
+					end
+				end)
+				return true
+			end,
+		})
+		:find()
+end, { desc = "Unreviewed daily notes" })
+
+-- Toggle done status on current daily note
+vim.keymap.set("n", "<leader>dx", function()
+	local lines = vim.fn.readfile(vim.fn.expand("%:p"))
+	local found = false
+	for i, line in ipairs(lines) do
+		if line:match("^done:%s*false") then
+			lines[i] = "done: true"
+			found = true
+			break
+		elseif line:match("^done:%s*true") then
+			lines[i] = "done: false"
+			found = true
+			break
+		end
+	end
+	if found then
+		vim.fn.writefile(lines, vim.fn.expand("%:p"))
+		vim.cmd("edit!")
+		local is_done = vim.fn.readfile(vim.fn.expand("%:p"), "", 5)
+		for _, l in ipairs(is_done) do
+			if l:match("^done:%s*true") then
+				vim.notify("Daily note marked as done", vim.log.levels.INFO)
+				return
+			end
+		end
+		vim.notify("Daily note marked as not done", vim.log.levels.INFO)
+	else
+		vim.notify("No done property found in frontmatter", vim.log.levels.WARN)
+	end
+end, { desc = "Toggle daily note done" })
+
 -- Auto-save for markdown files in the vault
 vim.api.nvim_create_autocmd({ "FocusLost", "BufLeave", "InsertLeave" }, {
 	pattern = vim.fn.expand(vault_path) .. "/**",
@@ -279,6 +366,75 @@ vim.api.nvim_create_autocmd("FileType", {
 	end,
 })
 
+-- Link word under cursor to existing or new note
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = "markdown",
+	callback = function(args)
+		vim.keymap.set("n", "<leader>ll", function()
+			local word = vim.fn.expand("<cword>")
+			local vault = vim.fn.expand(vault_path)
+			local files = vim.fn.globpath(vault, "**/*.md", false, true)
+			local notes = {}
+			for _, f in ipairs(files) do
+				table.insert(notes, vim.fn.fnamemodify(f, ":t:r"))
+			end
+			table.sort(notes)
+
+			-- Add "Create: <word>" as the first option
+			table.insert(notes, 1, "+ Create new: " .. word)
+
+			local pickers = require("telescope.pickers")
+			local finders = require("telescope.finders")
+			local conf = require("telescope.config").values
+			local actions = require("telescope.actions")
+			local action_state = require("telescope.actions.state")
+
+			pickers
+				.new({}, {
+					prompt_title = "Link: " .. word,
+					default_text = word,
+					finder = finders.new_table({ results = notes }),
+					sorter = conf.generic_sorter({}),
+					attach_mappings = function(prompt_bufnr)
+						actions.select_default:replace(function()
+							local selection = action_state.get_selected_entry()
+							actions.close(prompt_bufnr)
+							if not selection then
+								return
+							end
+
+							local chosen = selection[1]
+							local link_name
+
+							if chosen:match("^%+ Create new: ") then
+								-- Create a new note
+								local title = action_state.get_current_line()
+								if title == "" then
+									title = word
+								end
+								local filename = title:lower():gsub(" ", "_")
+								local subdir = vault .. "/" .. notes_subdir
+								vim.fn.mkdir(subdir, "p")
+								local note_path = subdir .. "/" .. filename .. ".md"
+								if vim.fn.filereadable(note_path) == 0 then
+									vim.fn.writefile({ "# " .. title, "" }, note_path)
+								end
+								link_name = filename
+							else
+								link_name = chosen
+							end
+
+							-- Replace the word under cursor with the wiki-link
+							vim.cmd("normal! ciw[[" .. link_name .. "]]")
+						end)
+						return true
+					end,
+				})
+				:find()
+		end, { buffer = args.buf, desc = "Link word to note" })
+	end,
+})
+
 -- Obsidian follow link / backlinks
 vim.keymap.set("n", "<leader>l", function()
 	local ok_link, _ = pcall(vim.cmd, "Obsidian follow_link")
@@ -429,6 +585,10 @@ vim.keymap.set("v", "<leader>cs", function()
 
 			if vim.fn.filereadable(daily_path) == 0 then
 				vim.fn.writefile({
+					"---",
+					"done: false",
+					"---",
+					"",
 					"# " .. today,
 					"",
 					"## Tasks",
@@ -502,6 +662,8 @@ vim.keymap.set("n", "<leader>?", function()
 		"  Ctrl+o         Obsidian command palette",
 		"  <leader>l      Follow link / backlinks",
 		"  <leader>dd     Today's daily note",
+		"  <leader>dr     Unreviewed daily notes",
+		"  <leader>dx     Toggle daily note done",
 		"  <leader>dp     Previous daily note",
 		"  <leader>dn     Next daily note",
 		"  [  ]           Jump between headings",
@@ -512,6 +674,7 @@ vim.keymap.set("n", "<leader>?", function()
 		"  <leader>p      Paste image from clipboard",
 		"  <leader>ot     Search tags across vault",
 		"  <leader>oo     Find orphan notes",
+		"  <leader>ll     Link word under cursor",
 		"  [[              Insert wiki-link (insert mode)",
 		"",
 		" Writing",
