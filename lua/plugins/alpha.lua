@@ -1,3 +1,7 @@
+if vim.g.obsidian_mode then
+	return
+end
+
 local alpha = require("alpha")
 local dashboard = require("alpha.themes.startify")
 

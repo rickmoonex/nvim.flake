@@ -79,6 +79,7 @@
           biome
           alejandra
           terraform-ls
+          markdown-oxide
 
           # Linting
           tflint
@@ -119,6 +120,8 @@
           none-ls-nvim
           render-markdown-nvim
           mini-nvim
+          obsidian-nvim
+          outline-nvim
         ];
       };
 
@@ -238,7 +241,11 @@
 
       # this will make a package out of each of the packageDefinitions defined above
       # and set the default package to the one passed in here.
-      packages = utils.mkAllWithDefault defaultPackage;
+      packages = utils.mkAllWithDefault defaultPackage // {
+        nvim-obsidian = pkgs.writeShellScriptBin "nvim-obsidian" ''
+          ${defaultPackage}/bin/nvim --cmd "let g:obsidian_mode=1" "$@"
+        '';
+      };
 
       # choose your package for devShell
       # and add whatever else you want in it.

@@ -1,0 +1,11 @@
+# {{date}}
+
+## Tasks
+
+- [ ] 
+
+## Notes
+
+
+## Journal
+
