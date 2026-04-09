@@ -565,72 +565,102 @@ vim.api.nvim_create_autocmd("FileType", {
 	end,
 })
 
--- Link word under cursor to existing or new note
+-- Link text to existing or new note (normal: word under cursor, visual: selection)
+local function link_to_note(text, replace_cmd)
+	local vault = vim.fn.expand(vault_path)
+	local files = vim.fn.globpath(vault, "**/*.md", false, true)
+	local notes = {}
+	for _, f in ipairs(files) do
+		table.insert(notes, vim.fn.fnamemodify(f, ":t:r"))
+	end
+	table.sort(notes)
+
+	table.insert(notes, 1, "+ Create new: " .. text)
+
+	local pickers = require("telescope.pickers")
+	local finders = require("telescope.finders")
+	local conf = require("telescope.config").values
+	local actions = require("telescope.actions")
+	local action_state = require("telescope.actions.state")
+
+	pickers
+		.new({}, {
+			prompt_title = "Link: " .. text,
+			default_text = text,
+			finder = finders.new_table({ results = notes }),
+			sorter = conf.generic_sorter({}),
+			attach_mappings = function(prompt_bufnr)
+				actions.select_default:replace(function()
+					local selection = action_state.get_selected_entry()
+					actions.close(prompt_bufnr)
+					if not selection then
+						return
+					end
+
+					local chosen = selection[1]
+					local link_name
+
+					if chosen:match("^%+ Create new: ") then
+						local title = action_state.get_current_line()
+						if title == "" then
+							title = text
+						end
+						local filename = title:lower():gsub(" ", "_")
+						local subdir = vault .. "/" .. notes_subdir
+						vim.fn.mkdir(subdir, "p")
+						local note_path = subdir .. "/" .. filename .. ".md"
+						if vim.fn.filereadable(note_path) == 0 then
+							vim.fn.writefile({ "# " .. title, "" }, note_path)
+						end
+						link_name = filename
+					else
+						link_name = chosen
+					end
+
+					replace_cmd(link_name)
+				end)
+				return true
+			end,
+		})
+		:find()
+end
+
 vim.api.nvim_create_autocmd("FileType", {
 	pattern = "markdown",
 	callback = function(args)
+		-- Normal mode: link word under cursor
 		vim.keymap.set("n", "<leader>ll", function()
 			local word = vim.fn.expand("<cword>")
-			local vault = vim.fn.expand(vault_path)
-			local files = vim.fn.globpath(vault, "**/*.md", false, true)
-			local notes = {}
-			for _, f in ipairs(files) do
-				table.insert(notes, vim.fn.fnamemodify(f, ":t:r"))
-			end
-			table.sort(notes)
-
-			-- Add "Create: <word>" as the first option
-			table.insert(notes, 1, "+ Create new: " .. word)
-
-			local pickers = require("telescope.pickers")
-			local finders = require("telescope.finders")
-			local conf = require("telescope.config").values
-			local actions = require("telescope.actions")
-			local action_state = require("telescope.actions.state")
-
-			pickers
-				.new({}, {
-					prompt_title = "Link: " .. word,
-					default_text = word,
-					finder = finders.new_table({ results = notes }),
-					sorter = conf.generic_sorter({}),
-					attach_mappings = function(prompt_bufnr)
-						actions.select_default:replace(function()
-							local selection = action_state.get_selected_entry()
-							actions.close(prompt_bufnr)
-							if not selection then
-								return
-							end
-
-							local chosen = selection[1]
-							local link_name
-
-							if chosen:match("^%+ Create new: ") then
-								-- Create a new note
-								local title = action_state.get_current_line()
-								if title == "" then
-									title = word
-								end
-								local filename = title:lower():gsub(" ", "_")
-								local subdir = vault .. "/" .. notes_subdir
-								vim.fn.mkdir(subdir, "p")
-								local note_path = subdir .. "/" .. filename .. ".md"
-								if vim.fn.filereadable(note_path) == 0 then
-									vim.fn.writefile({ "# " .. title, "" }, note_path)
-								end
-								link_name = filename
-							else
-								link_name = chosen
-							end
-
-							-- Replace the word under cursor with the wiki-link
-							vim.cmd("normal! ciw[[" .. link_name .. "]]")
-						end)
-						return true
-					end,
-				})
-				:find()
+			link_to_note(word, function(link_name)
+				vim.cmd("normal! ciw[[" .. link_name .. "]]")
+			end)
 		end, { buffer = args.buf, desc = "Link word to note" })
+
+		-- Visual mode: link selection
+		vim.keymap.set("v", "<leader>ll", function()
+			local start_pos = vim.fn.getpos("v")
+			local end_pos = vim.fn.getpos(".")
+			if start_pos[2] > end_pos[2] or (start_pos[2] == end_pos[2] and start_pos[3] > end_pos[3]) then
+				start_pos, end_pos = end_pos, start_pos
+			end
+			local line = vim.api.nvim_buf_get_lines(0, start_pos[2] - 1, start_pos[2], false)[1]
+			local text = line:sub(start_pos[3], end_pos[3])
+
+			vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), "nx", false)
+
+			vim.schedule(function()
+				link_to_note(text, function(link_name)
+					vim.api.nvim_buf_set_text(
+						0,
+						start_pos[2] - 1,
+						start_pos[3] - 1,
+						end_pos[2] - 1,
+						end_pos[3],
+						{ "[[" .. link_name .. "]]" }
+					)
+				end)
+			end)
+		end, { buffer = args.buf, desc = "Link selection to note" })
 	end,
 })
 
@@ -732,7 +762,7 @@ vim.keymap.set("n", "<leader>?", function()
 		"  <leader>p      Paste image from clipboard",
 		"  <leader>ot     Search tags across vault",
 		"  <leader>oo     Find orphan notes",
-		"  <leader>ll     Link word under cursor",
+		"  <leader>ll     Link word/selection to note",
 		"  [[              Insert wiki-link (insert mode)",
 		"",
 		" Writing",
