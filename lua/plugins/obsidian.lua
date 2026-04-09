@@ -534,6 +534,7 @@ vim.api.nvim_create_autocmd("FileType", {
 			end
 
 			table.sort(entries)
+			table.insert(entries, 1, "+ Create new note")
 
 			local pickers = require("telescope.pickers")
 			local finders = require("telescope.finders")
@@ -549,9 +550,27 @@ vim.api.nvim_create_autocmd("FileType", {
 					attach_mappings = function(prompt_bufnr)
 						actions.select_default:replace(function()
 							local selection = action_state.get_selected_entry()
+							local prompt_text = action_state.get_current_line()
 							actions.close(prompt_bufnr)
-							if selection then
-								local text = "[[" .. selection[1] .. "]]"
+
+							local link_name
+							if selection and selection[1] == "+ Create new note" then
+								local title = prompt_text ~= "" and prompt_text or "untitled"
+								local filename = title:lower():gsub(" ", "_")
+								local vault = vim.fn.expand(vault_path)
+								local subdir = vault .. "/" .. notes_subdir
+								vim.fn.mkdir(subdir, "p")
+								local note_path = subdir .. "/" .. filename .. ".md"
+								if vim.fn.filereadable(note_path) == 0 then
+									vim.fn.writefile({ "# " .. title, "" }, note_path)
+								end
+								link_name = filename
+							elseif selection then
+								link_name = selection[1]
+							end
+
+							if link_name then
+								local text = "[[" .. link_name .. "]]"
 								vim.api.nvim_put({ text }, "", false, true)
 								local key = vim.api.nvim_replace_termcodes("a", true, false, true)
 								vim.api.nvim_feedkeys(key, "n", false)
