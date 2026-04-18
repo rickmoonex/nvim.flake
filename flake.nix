@@ -87,9 +87,10 @@
 
           # Runtime dev
           ripgrep
-          pngpaste
           imagemagick
-        ];
+        ]
+        ++ pkgs.lib.optionals pkgs.stdenv.isDarwin [ pkgs.pngpaste ]
+        ++ pkgs.lib.optionals pkgs.stdenv.isLinux [ pkgs.xclip pkgs.wl-clipboard ];
       };
 
       # This is for plugins that will load at startup without using packadd:
