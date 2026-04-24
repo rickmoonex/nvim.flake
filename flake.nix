@@ -80,10 +80,13 @@
           alejandra
           terraform-ls
           markdown-oxide
+          nushell
+          nufmt
 
           # Linting
           tflint
           terraform
+          nu-lint
 
           # Runtime dev
           ripgrep

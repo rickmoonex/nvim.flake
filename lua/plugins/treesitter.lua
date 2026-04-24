@@ -11,3 +11,10 @@ vim.cmd([[autocmd BufRead,BufNewFile *.hcl set filetype=hcl]])
 vim.cmd([[autocmd BufRead,BufNewFile .terraformrc,terraform.rc set filetype=hcl]])
 vim.cmd([[autocmd BufRead,BufNewFile *.tf,*.tfvars set filetype=terraform]])
 vim.cmd([[autocmd BufRead,BufNewFile *.tfstate,*.tfstate.backup set filetype=json]])
+
+-- Nushell has no built-in Vim syntax file, so highlighting only works if we
+-- explicitly start the tree-sitter parser on FileType.
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = "nu",
+	callback = function() vim.treesitter.start() end,
+})
