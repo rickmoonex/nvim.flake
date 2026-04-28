@@ -82,6 +82,8 @@
           markdown-oxide
           nushell
           nufmt
+          zls
+          zig
 
           # Linting
           tflint

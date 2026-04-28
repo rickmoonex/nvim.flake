@@ -17,8 +17,9 @@ vim.lsp.config("nu-lint", {
 	filetypes = { "nu" },
 	root_markers = { ".git" },
 })
+vim.lsp.config("zls", {})
 
-vim.lsp.enable({ "ts_ls", "biome", "markdown_oxide", "nushell", "nu-lint" })
+vim.lsp.enable({ "ts_ls", "biome", "markdown_oxide", "nushell", "nu-lint", "zls" })
 
 vim.api.nvim_create_autocmd("LspAttach", {
 	callback = function(args)
