@@ -89,6 +89,8 @@
           cargo
           rustfmt
           clippy
+          vscode-langservers-extracted
+          emmet-language-server
 
           # Linting
           tflint
@@ -140,6 +142,7 @@
           twilight-nvim
           img-clip-nvim
           image-nvim
+          nvim-ts-autotag
         ];
       };
 
