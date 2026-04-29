@@ -4,6 +4,11 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     nixCats.url = "github:BirdeeHub/nixCats-nvim";
+
+    "plugins-maud-fmt" = {
+      url = "github:eboody/maud-fmt.nvim";
+      flake = false;
+    };
   };
 
   # see :help nixCats.flake.outputs
@@ -107,7 +112,8 @@
 
       # This is for plugins that will load at startup without using packadd:
       startupPlugins = {
-        gitPlugins = with pkgs.neovimPlugins; [
+        gitPlugins = [
+          pkgs.neovimPlugins."maud-fmt"
         ];
         general = with pkgs.vimPlugins; [
           catppuccin-nvim

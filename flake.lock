@@ -31,10 +31,27 @@
         "type": "github"
       }
     },
+    "plugins-maud-fmt": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1767731064,
+        "narHash": "sha256-sV+pk1bkVeQxkG8bhXuaURPNqEKcq5itPYsUKJCVMxY=",
+        "owner": "eboody",
+        "repo": "maud-fmt.nvim",
+        "rev": "7fe4715733a5abdb94bdc07160361fd01ce4af35",
+        "type": "github"
+      },
+      "original": {
+        "owner": "eboody",
+        "repo": "maud-fmt.nvim",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "nixCats": "nixCats",
-        "nixpkgs": "nixpkgs"
+        "nixpkgs": "nixpkgs",
+        "plugins-maud-fmt": "plugins-maud-fmt"
       }
     }
   },

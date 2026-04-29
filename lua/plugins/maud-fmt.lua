@@ -1,0 +1,1 @@
+require("maud-fmt").setup({})
