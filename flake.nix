@@ -84,6 +84,11 @@
           nufmt
           zls
           zig
+          rust-analyzer
+          rustc
+          cargo
+          rustfmt
+          clippy
 
           # Linting
           tflint

@@ -18,8 +18,16 @@ vim.lsp.config("nu-lint", {
 	root_markers = { ".git" },
 })
 vim.lsp.config("zls", {})
+vim.lsp.config("rust_analyzer", {
+	settings = {
+		["rust-analyzer"] = {
+			cargo = { allFeatures = true },
+			checkOnSave = { command = "clippy" },
+		},
+	},
+})
 
-vim.lsp.enable({ "ts_ls", "biome", "markdown_oxide", "nushell", "nu-lint", "zls" })
+vim.lsp.enable({ "ts_ls", "biome", "markdown_oxide", "nushell", "nu-lint", "zls", "rust_analyzer" })
 
 vim.api.nvim_create_autocmd("LspAttach", {
 	callback = function(args)
