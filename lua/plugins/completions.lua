@@ -27,16 +27,4 @@ cmp.setup({
   }),
 })
 
--- Add obsidian sources for markdown files
-cmp.setup.filetype("markdown", {
-  sources = cmp.config.sources({
-    { name = "obsidian" },
-    { name = "obsidian_tags" },
-    { name = "nvim_lsp" },
-    { name = "luasnip" },
-  }, {
-    { name = "buffer" },
-  }),
-})
-
 cmp.event:on("confirm_done", cmp_autopairs.on_confirm_done())

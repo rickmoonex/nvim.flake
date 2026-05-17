@@ -14,7 +14,7 @@ require("zen-mode").setup({
 
 vim.keymap.set("n", "<leader>z", function()
 	-- Focus a file buffer before toggling zen mode
-	local dominated = { "neo-tree", "Outline", "noice", "notify" }
+	local dominated = { "Outline", "noice", "notify" }
 	local dominated_set = {}
 	for _, ft in ipairs(dominated) do
 		dominated_set[ft] = true

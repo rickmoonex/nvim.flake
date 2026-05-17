@@ -24,7 +24,7 @@ vim.diagnostic.config({
 
 -- View persistence
 vim.opt.viewoptions:append("folds")
-local ignore_ft = { "help", "lazy", "neo-tree", "NvimTree", "gitcommit" }
+local ignore_ft = { "help", "lazy", "NvimTree", "gitcommit" }
 
 local function should_ignore()
 	return vim.tbl_contains(ignore_ft, vim.bo.filetype)

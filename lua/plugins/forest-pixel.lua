@@ -45,7 +45,6 @@ catppuccin.setup({
 		cmp = true,
 		notify = true,
 		noice = true,
-		neotree = true,
 		telescope = { enabled = true },
 		treesitter = true,
 		native_lsp = {
@@ -59,6 +58,25 @@ catppuccin.setup({
 		},
 		mini = { enabled = true },
 	},
+	custom_highlights = function()
+		return {
+			TelescopeNormal = { bg = "NONE" },
+			TelescopeBorder = { bg = "NONE" },
+			TelescopePromptNormal = { bg = "NONE" },
+			TelescopePromptBorder = { bg = "NONE" },
+			TelescopePromptTitle = { bg = "NONE" },
+			TelescopePromptCounter = { bg = "NONE" },
+			TelescopePromptPrefix = { bg = "NONE" },
+			TelescopeResultsNormal = { bg = "NONE" },
+			TelescopeResultsBorder = { bg = "NONE" },
+			TelescopeResultsTitle = { bg = "NONE" },
+			TelescopePreviewNormal = { bg = "NONE" },
+			TelescopePreviewBorder = { bg = "NONE" },
+			TelescopePreviewTitle = { bg = "NONE" },
+			TelescopeSelection = { bg = "NONE" },
+			TelescopeSelectionCaret = { bg = "NONE" },
+		}
+	end,
 })
 
 -- Force recompile to avoid stale cache after nix flake updates.

@@ -86,7 +86,6 @@
           terraform-ls
           markdown-oxide
           nushell
-          nufmt
           zls
           zig
           rust-analyzer
@@ -104,9 +103,7 @@
 
           # Runtime dev
           ripgrep
-          imagemagick
         ]
-        ++ pkgs.lib.optionals pkgs.stdenv.isDarwin [ pkgs.pngpaste ]
         ++ pkgs.lib.optionals pkgs.stdenv.isLinux [ pkgs.xclip pkgs.wl-clipboard ];
       };
 
@@ -117,7 +114,6 @@
         ];
         general = with pkgs.vimPlugins; [
           catppuccin-nvim
-          neo-tree-nvim
           plenary-nvim
           nui-nvim
           nvim-web-devicons
@@ -126,6 +122,7 @@
           noice-nvim
           telescope-nvim
           telescope-ui-select-nvim
+          telescope-file-browser-nvim
           vim-tmux-navigator
           alpha-nvim
           nvim-autopairs
@@ -141,13 +138,10 @@
           none-ls-nvim
           render-markdown-nvim
           mini-nvim
-          obsidian-nvim
           outline-nvim
           vim-table-mode
           zen-mode-nvim
           twilight-nvim
-          img-clip-nvim
-          image-nvim
           nvim-ts-autotag
         ];
       };
@@ -268,16 +262,7 @@
 
       # this will make a package out of each of the packageDefinitions defined above
       # and set the default package to the one passed in here.
-      packages = utils.mkAllWithDefault defaultPackage // {
-        nvim-obsidian = pkgs.writeShellScriptBin "nvim-obsidian" ''
-          ${defaultPackage}/bin/nvim --cmd "let g:obsidian_mode=1" "$@"
-        '';
-        obsidian-util = pkgs.writeShellApplication {
-          name = "obsidian-util";
-          runtimeInputs = with pkgs; [ coreutils gnused gnugrep ];
-          text = builtins.readFile ./scripts/obsidian-util.sh;
-        };
-      };
+      packages = utils.mkAllWithDefault defaultPackage;
 
       # choose your package for devShell
       # and add whatever else you want in it.
