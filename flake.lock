@@ -31,6 +31,22 @@
         "type": "github"
       }
     },
+    "plugins-checkmate": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1777143557,
+        "narHash": "sha256-zJNyjUmkEQqwUA+J1vdq3oVLSXCU9dWMKFB3rNYB0Cw=",
+        "owner": "bngarren",
+        "repo": "checkmate.nvim",
+        "rev": "e57c8b502ab3e77e478e16460fcc2d2a16082f73",
+        "type": "github"
+      },
+      "original": {
+        "owner": "bngarren",
+        "repo": "checkmate.nvim",
+        "type": "github"
+      }
+    },
     "plugins-maud-fmt": {
       "flake": false,
       "locked": {
@@ -51,6 +67,7 @@
       "inputs": {
         "nixCats": "nixCats",
         "nixpkgs": "nixpkgs",
+        "plugins-checkmate": "plugins-checkmate",
         "plugins-maud-fmt": "plugins-maud-fmt"
       }
     }

@@ -9,6 +9,11 @@
       url = "github:eboody/maud-fmt.nvim";
       flake = false;
     };
+
+    "plugins-checkmate" = {
+      url = "github:bngarren/checkmate.nvim";
+      flake = false;
+    };
   };
 
   # see :help nixCats.flake.outputs
@@ -111,6 +116,7 @@
       startupPlugins = {
         gitPlugins = [
           pkgs.neovimPlugins."maud-fmt"
+          pkgs.neovimPlugins."checkmate"
         ];
         general = with pkgs.vimPlugins; [
           catppuccin-nvim
