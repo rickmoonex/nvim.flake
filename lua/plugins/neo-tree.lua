@@ -1,6 +1,6 @@
 require("nvim-web-devicons").set_icon({
 	proto = {
-		icon = "",
+		icon = "󰅪",
 		color = "#E26A4B",
 		name = "Proto",
 	},
