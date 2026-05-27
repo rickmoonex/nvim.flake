@@ -120,6 +120,7 @@
         ];
         general = with pkgs.vimPlugins; [
           catppuccin-nvim
+          neo-tree-nvim
           plenary-nvim
           nui-nvim
           nvim-web-devicons
@@ -128,7 +129,6 @@
           noice-nvim
           telescope-nvim
           telescope-ui-select-nvim
-          telescope-file-browser-nvim
           vim-tmux-navigator
           alpha-nvim
           nvim-autopairs
