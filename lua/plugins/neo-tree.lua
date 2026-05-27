@@ -1,3 +1,11 @@
+require("nvim-web-devicons").set_icon({
+	proto = {
+		icon = "",
+		color = "#E26A4B",
+		name = "Proto",
+	},
+})
+
 require("neo-tree").setup({
 	nesting_rules = {
 		["package.json"] = {

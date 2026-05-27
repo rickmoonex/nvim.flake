@@ -6,6 +6,7 @@ null_ls.setup({
     null_ls.builtins.formatting.biome,
     null_ls.builtins.formatting.alejandra,
     null_ls.builtins.formatting.terraform_fmt,
+    null_ls.builtins.formatting.buf,
   },
 })
 

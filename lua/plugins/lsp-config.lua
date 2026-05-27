@@ -38,6 +38,7 @@ vim.lsp.config("cssls", {
 	filetypes = { "css", "scss", "less" },
 	init_options = { provideFormatter = true },
 })
+vim.lsp.config("buf_ls", {})
 vim.lsp.config("emmet_language_server", {
 	filetypes = {
 		"html",
@@ -63,6 +64,7 @@ vim.lsp.enable({
 	"html",
 	"cssls",
 	"emmet_language_server",
+	"buf_ls",
 })
 
 vim.api.nvim_create_autocmd("LspAttach", {

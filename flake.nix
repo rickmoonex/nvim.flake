@@ -100,6 +100,7 @@
           clippy
           vscode-langservers-extracted
           emmet-language-server
+          buf
 
           # Linting
           tflint
