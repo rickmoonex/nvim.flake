@@ -21,8 +21,19 @@ vim.lsp.config("zls", {})
 vim.lsp.config("rust_analyzer", {
 	settings = {
 		["rust-analyzer"] = {
-			cargo = { allFeatures = true },
-			checkOnSave = { command = "clippy" },
+			check = {
+				command = "clippy",
+				allTargets = true,
+				features = "all",
+				extraArgs = {
+					"--workspace",
+					"--",
+					"-Dwarnings",
+					"-Wclippy::pedantic",
+					"-Wclippy::nursery",
+					"-Aclippy::module-name-repetitions",
+				},
+			},
 		},
 	},
 })
