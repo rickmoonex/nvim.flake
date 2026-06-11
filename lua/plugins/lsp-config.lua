@@ -50,6 +50,14 @@ vim.lsp.config("cssls", {
 	init_options = { provideFormatter = true },
 })
 vim.lsp.config("buf_ls", {})
+-- Rhai language server (rhaiscript/lsp). The `rhai` binary speaks LSP over
+-- stdio and also provides document formatting. Definitions in `*.d.rhai`
+-- files are indexed automatically via the server's default `**/*.rhai` glob.
+vim.lsp.config("rhai_lsp", {
+	cmd = { "rhai", "lsp", "stdio" },
+	filetypes = { "rhai" },
+	root_markers = { "Rhai.toml", ".git" },
+})
 vim.lsp.config("emmet_language_server", {
 	filetypes = {
 		"html",
@@ -76,6 +84,7 @@ vim.lsp.enable({
 	"cssls",
 	"emmet_language_server",
 	"buf_ls",
+	"rhai_lsp",
 })
 
 vim.api.nvim_create_autocmd("LspAttach", {

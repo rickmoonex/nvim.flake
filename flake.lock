@@ -63,12 +63,47 @@
         "type": "github"
       }
     },
+    "rhai-lsp-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1666736799,
+        "narHash": "sha256-cgcOjlCYMMGNnI2uUBubX6xbntTKj5F+C1Yi/GVtSQ4=",
+        "owner": "rhaiscript",
+        "repo": "lsp",
+        "rev": "2f1fcd73f43b909d1d5e96123516e599b9aaaa88",
+        "type": "github"
+      },
+      "original": {
+        "owner": "rhaiscript",
+        "repo": "lsp",
+        "rev": "2f1fcd73f43b909d1d5e96123516e599b9aaaa88",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "nixCats": "nixCats",
         "nixpkgs": "nixpkgs",
         "plugins-checkmate": "plugins-checkmate",
-        "plugins-maud-fmt": "plugins-maud-fmt"
+        "plugins-maud-fmt": "plugins-maud-fmt",
+        "rhai-lsp-src": "rhai-lsp-src",
+        "tree-sitter-rhai-src": "tree-sitter-rhai-src"
+      }
+    },
+    "tree-sitter-rhai-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1734367085,
+        "narHash": "sha256-cRei23VZH+IVUSiWYC+0OXVISUJbn3UVgzVK2uSDhyA=",
+        "owner": "elkowar",
+        "repo": "tree-sitter-rhai",
+        "rev": "9effbd906ef4bcd29445875beee0daa74341e068",
+        "type": "github"
+      },
+      "original": {
+        "owner": "elkowar",
+        "repo": "tree-sitter-rhai",
+        "type": "github"
       }
     }
   },

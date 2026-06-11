@@ -14,6 +14,19 @@
       url = "github:bngarren/checkmate.nvim";
       flake = false;
     };
+
+    # Rhai language server (rhaiscript/lsp). Builds the `rhai` binary which
+    # provides `rhai lsp stdio` plus formatting. Not packaged in nixpkgs.
+    "rhai-lsp-src" = {
+      url = "github:rhaiscript/lsp/2f1fcd73f43b909d1d5e96123516e599b9aaaa88";
+      flake = false;
+    };
+
+    # Tree-sitter grammar for Rhai (no grammar in nixpkgs' withAllGrammars).
+    "tree-sitter-rhai-src" = {
+      url = "github:elkowar/tree-sitter-rhai";
+      flake = false;
+    };
   };
 
   # see :help nixCats.flake.outputs
@@ -71,7 +84,34 @@
       name,
       mkPlugin,
       ...
-    } @ packageDef: {
+    } @ packageDef: let
+      # Rhai language server: builds the `rhai` CLI from rhaiscript/lsp.
+      # Upstream has no committed Cargo.lock, so we supply our own
+      # (generated once, stored at ./nix/rhai-lsp-Cargo.lock).
+      rhai-lsp = pkgs.rustPlatform.buildRustPackage {
+        pname = "rhai-lsp";
+        version = "unstable-2022-10-26";
+        src = inputs.rhai-lsp-src;
+        cargoLock.lockFile = ./nix/rhai-lsp-Cargo.lock;
+        postPatch = ''
+          cp ${./nix/rhai-lsp-Cargo.lock} Cargo.lock
+        '';
+        cargoBuildFlags = ["-p" "rhai-cli"];
+        doCheck = false;
+        meta = {
+          description = "Language server for the Rhai scripting language";
+          mainProgram = "rhai";
+        };
+      };
+
+      # Tree-sitter grammar for Rhai, built so nvim-treesitter can use it.
+      tree-sitter-rhai =
+        pkgs.tree-sitter.buildGrammar {
+          language = "rhai";
+          version = "unstable-2024-12-16";
+          src = inputs.tree-sitter-rhai-src;
+        };
+    in {
       # to define and use a new category, simply add a new list to a set here,
       # and later, you will include categoryname = true; in the set you
       # provide when you build the package using this builder function.
@@ -101,6 +141,7 @@
           vscode-langservers-extracted
           emmet-language-server
           buf
+          rhai-lsp
 
           # Linting
           tflint
@@ -126,7 +167,10 @@
           nui-nvim
           nvim-web-devicons
           nvim-notify
-          nvim-treesitter.withAllGrammars
+          # All bundled grammars plus our custom-built Rhai grammar.
+          (nvim-treesitter.withPlugins (p:
+            nvim-treesitter.allGrammars
+            ++ [tree-sitter-rhai]))
           noice-nvim
           telescope-nvim
           telescope-ui-select-nvim
