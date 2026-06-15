@@ -7,6 +7,9 @@ null_ls.setup({
     null_ls.builtins.formatting.alejandra,
     null_ls.builtins.formatting.terraform_fmt,
     null_ls.builtins.formatting.buf,
+    null_ls.builtins.formatting.prettierd.with({
+      filetypes = { "markdown", "markdown.mdx" },
+    }),
   },
 })
 

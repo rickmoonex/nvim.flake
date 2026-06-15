@@ -17,6 +17,11 @@ vim.keymap.set("n", "C-l", ":TmuxNavigateRight")
 vim.opt.number = true
 vim.opt.relativenumber = true
 
+-- Required for render-markdown.nvim to hide raw markup (|, #, etc.)
+-- and draw merged table borders. Without this, tables show raw pipes.
+vim.opt.conceallevel = 2
+vim.opt.concealcursor = ""
+
 vim.diagnostic.enable = true
 vim.diagnostic.config({
 	virtual_lines = true,

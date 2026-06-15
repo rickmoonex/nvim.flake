@@ -130,6 +130,7 @@
           alejandra
           terraform-ls
           markdown-oxide
+          prettierd
           nushell
           zls
           zig
