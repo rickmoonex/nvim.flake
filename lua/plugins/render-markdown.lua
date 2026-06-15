@@ -1,11 +1,12 @@
 require("render-markdown").setup({
-	-- Render in normal/command/terminal modes; show raw markdown while
-	-- editing (insert mode) so tables are easy to modify.
+	-- Render only in normal/command/terminal modes. Insert and visual
+	-- modes are excluded so raw markdown is shown while editing or
+	-- selecting text.
 	render_modes = { "n", "c", "t" },
 	anti_conceal = {
-		-- Reveal raw markdown on the line the cursor is on so you can
-		-- edit it, while the rest of the buffer stays rendered.
-		enabled = true,
+		-- Keep the cursor line rendered in normal mode (no raw reveal).
+		-- Raw markdown is instead shown by switching to insert/visual mode.
+		enabled = false,
 	},
 	heading = {
 		icons = { " ", " ", " ", " ", " ", " " },
@@ -49,4 +50,34 @@ require("render-markdown").setup({
 		alignment_indicator = "━",
 		border = { "╭", "┬", "╮", "├", "┼", "┤", "╰", "┴", "╯", "│", "─" },
 	},
+})
+
+-- Follow markdown links with <CR> in normal mode.
+-- Local/relative links and [[wikilinks]] are resolved via the
+-- markdown-oxide LSP (textDocument/definition). External URLs are
+-- opened with the system handler (gx). Falls back to a normal <CR>
+-- when the cursor is not on a link.
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = "markdown",
+	callback = function(args)
+		vim.keymap.set("n", "<CR>", function()
+			-- Grab the WORD under the cursor to detect an external URL.
+			local word = vim.fn.expand("<cWORD>")
+			if word:match("https?://") or word:match("^<?https?://") then
+				vim.cmd("normal! gx")
+				return
+			end
+
+			-- Prefer LSP definition (resolves relative links / wikilinks).
+			local clients = vim.lsp.get_clients({ bufnr = args.buf, method = "textDocument/definition" })
+			if not vim.tbl_isempty(clients) then
+				vim.lsp.buf.definition()
+				return
+			end
+
+			-- No link handler available: behave like a normal <CR>.
+			local cr = vim.api.nvim_replace_termcodes("<CR>", true, false, true)
+			vim.api.nvim_feedkeys(cr, "n", false)
+		end, { buffer = args.buf, silent = true, desc = "Follow markdown link" })
+	end,
 })
