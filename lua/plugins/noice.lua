@@ -18,5 +18,5 @@ require("noice").setup({
 })
 
 require("notify").setup({
-	background_colour = "#282d20",
+	background_colour = require("e-ink.palette").mono()[1],
 })

@@ -1,12 +1,24 @@
-require("nvim-web-devicons").set_icon({
+local mono = require("e-ink.palette").mono()
+local devicons = require("nvim-web-devicons")
+
+devicons.setup({ color_icons = false })
+devicons.set_default_icon(devicons.get_default_icon().icon, mono[10], "246")
+devicons.set_icon({
 	proto = {
 		icon = "󰅪",
-		color = "#E26A4B",
 		name = "Proto",
 	},
 })
 
 require("neo-tree").setup({
+	default_component_configs = {
+		name = {
+			use_git_status_colors = false,
+		},
+		git_status = {
+			align = "right",
+		},
+	},
 	nesting_rules = {
 		["package.json"] = {
 			pattern = "^package%.json$", -- <-- Lua pattern

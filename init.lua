@@ -1,6 +1,6 @@
 require("config/options")
 
-require("plugins/forest-pixel")
+require("plugins/e-ink")
 require("plugins/neo-tree")
 require("plugins/noice")
 require("plugins/treesitter")

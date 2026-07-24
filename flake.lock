@@ -47,6 +47,22 @@
         "type": "github"
       }
     },
+    "plugins-e-ink": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1761905235,
+        "narHash": "sha256-+AguHiALJNm48WUa654Gmrt3WJsyA90zG/7Me6aoVHs=",
+        "owner": "e-ink-colorscheme",
+        "repo": "e-ink.nvim",
+        "rev": "a0f003a0c6e2952abd9b73ef89d56c65e6c46f00",
+        "type": "github"
+      },
+      "original": {
+        "owner": "e-ink-colorscheme",
+        "repo": "e-ink.nvim",
+        "type": "github"
+      }
+    },
     "plugins-maud-fmt": {
       "flake": false,
       "locked": {
@@ -85,6 +101,7 @@
         "nixCats": "nixCats",
         "nixpkgs": "nixpkgs",
         "plugins-checkmate": "plugins-checkmate",
+        "plugins-e-ink": "plugins-e-ink",
         "plugins-maud-fmt": "plugins-maud-fmt",
         "rhai-lsp-src": "rhai-lsp-src",
         "tree-sitter-rhai-src": "tree-sitter-rhai-src"
