@@ -18,5 +18,6 @@ dashboard.section.header.val = {
 	[[                                                                       ]],
 	[[                                                                       ]],
 }
+dashboard.section.header.opts.hl = "OrchidAccent"
 
 alpha.setup(dashboard.opts)

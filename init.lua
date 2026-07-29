@@ -1,6 +1,6 @@
 require("config/options")
 
-require("plugins/e-ink")
+require("plugins/orchid-dark")
 require("plugins/neo-tree")
 require("plugins/noice")
 require("plugins/treesitter")

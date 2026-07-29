@@ -18,5 +18,5 @@ require("noice").setup({
 })
 
 require("notify").setup({
-	background_colour = require("e-ink.palette").mono()[1],
+	background_colour = require("theme.orchid").colors.background,
 })

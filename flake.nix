@@ -15,11 +15,6 @@
       flake = false;
     };
 
-    "plugins-e-ink" = {
-      url = "github:e-ink-colorscheme/e-ink.nvim";
-      flake = false;
-    };
-
     # Rhai language server (rhaiscript/lsp). Builds the `rhai` binary which
     # provides `rhai lsp stdio` plus formatting. Not packaged in nixpkgs.
     "rhai-lsp-src" = {
@@ -165,7 +160,6 @@
         gitPlugins = [
           pkgs.neovimPlugins."maud-fmt"
           pkgs.neovimPlugins."checkmate"
-          pkgs.neovimPlugins."e-ink"
         ];
         general = with pkgs.vimPlugins; [
           neo-tree-nvim
