@@ -87,7 +87,28 @@
         "plugins-checkmate": "plugins-checkmate",
         "plugins-maud-fmt": "plugins-maud-fmt",
         "rhai-lsp-src": "rhai-lsp-src",
+        "ti-ls": "ti-ls",
         "tree-sitter-rhai-src": "tree-sitter-rhai-src"
+      }
+    },
+    "ti-ls": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1786969859,
+        "narHash": "sha256-FY20vF6wJyd/xAZmm3qLwZsQ3XJdNL6TR2IbQVECMkw=",
+        "owner": "rickmoonex",
+        "repo": "ti-ls",
+        "rev": "170f44f63b0b7c09526cda8567c9bc119d526e37",
+        "type": "github"
+      },
+      "original": {
+        "owner": "rickmoonex",
+        "repo": "ti-ls",
+        "type": "github"
       }
     },
     "tree-sitter-rhai-src": {

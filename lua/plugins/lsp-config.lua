@@ -8,6 +8,8 @@ vim.lsp.config("*", {
 	capabilities = capabilities,
 })
 
+require("ti_ls").setup()
+
 vim.lsp.config("ts_ls", {})
 vim.lsp.config("biome", {})
 vim.lsp.config("markdown_oxide", {})

@@ -1,0 +1,14 @@
+{
+  "tools": {
+    "azure-devops_*": false
+  },
+  "agent": {
+    "azure-devops": {
+      "description": "azure-devops operations",
+      "mode": "subagent",
+      "tools": {
+        "azure-devops_*": true
+      }
+    }
+  }
+}

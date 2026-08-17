@@ -5,6 +5,11 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     nixCats.url = "github:BirdeeHub/nixCats-nvim";
 
+    ti-ls = {
+      url = "github:rickmoonex/ti-ls";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     "plugins-maud-fmt" = {
       url = "github:eboody/maud-fmt.nvim";
       flake = false;
@@ -143,6 +148,7 @@
           emmet-language-server
           buf
           rhai-lsp
+          inputs.ti-ls.packages.${pkgs.stdenv.hostPlatform.system}.ti-ls
 
           # Linting
           tflint
@@ -160,6 +166,7 @@
         gitPlugins = [
           pkgs.neovimPlugins."maud-fmt"
           pkgs.neovimPlugins."checkmate"
+          inputs.ti-ls.packages.${pkgs.stdenv.hostPlatform.system}.ti-ls-nvim
         ];
         general = with pkgs.vimPlugins; [
           neo-tree-nvim
