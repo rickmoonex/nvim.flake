@@ -52,14 +52,6 @@ vim.lsp.config("cssls", {
 	init_options = { provideFormatter = true },
 })
 vim.lsp.config("buf_ls", {})
--- Rhai language server (rhaiscript/lsp). The `rhai` binary speaks LSP over
--- stdio and also provides document formatting. Definitions in `*.d.rhai`
--- files are indexed automatically via the server's default `**/*.rhai` glob.
-vim.lsp.config("rhai_lsp", {
-	cmd = { "rhai", "lsp", "stdio" },
-	filetypes = { "rhai" },
-	root_markers = { "Rhai.toml", ".git" },
-})
 vim.lsp.config("emmet_language_server", {
 	filetypes = {
 		"html",
@@ -86,7 +78,6 @@ vim.lsp.enable({
 	"cssls",
 	"emmet_language_server",
 	"buf_ls",
-	"rhai_lsp",
 })
 
 vim.api.nvim_create_autocmd("LspAttach", {
@@ -99,8 +90,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
 		vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
 
 		-- cmp-nvim-lsp only registers its completion source on InsertEnter.
-		-- If a server attaches while already in insert mode (e.g. slower
-		-- servers like rhai_lsp), the source is missing for the current
+		-- If a server attaches while already in insert mode, the source is missing for the current
 		-- insert session and no suggestions appear. Register it on attach.
 		local ok, cmp_lsp = pcall(require, "cmp_nvim_lsp")
 		if ok and cmp_lsp._on_insert_enter then
