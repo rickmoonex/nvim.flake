@@ -1,4 +1,4 @@
-local colors = require("theme.orchid").colors
+local colors = require("theme.rose-pine")
 
 require("bufferline").setup({
 	options = {

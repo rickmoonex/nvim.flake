@@ -1,6 +1,6 @@
-local colors = require("theme.orchid").colors
+local colors = require("theme.rose-pine")
 
-local orchid = {
+local rose_pine = {
 	normal = {
 		a = { fg = colors.background, bg = colors.accent, gui = "bold" },
 		b = { fg = colors.foreground, bg = colors.raised },
@@ -27,7 +27,7 @@ local orchid = {
 
 require("lualine").setup({
 	options = {
-		theme = orchid,
+		theme = rose_pine,
 		component_separators = "│",
 		section_separators = { left = "", right = "" },
 	},

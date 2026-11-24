@@ -105,6 +105,8 @@
           cargo
           rustfmt
           clippy
+          go
+          gopls
           vscode-langservers-extracted
           emmet-language-server
           buf
@@ -133,6 +135,7 @@
           plenary-nvim
           nui-nvim
           nvim-web-devicons
+          rose-pine
           nvim-notify
           nvim-treesitter.withAllGrammars
           noice-nvim

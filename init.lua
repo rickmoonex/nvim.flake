@@ -1,6 +1,6 @@
 require("config/options")
 
-require("plugins/orchid-dark")
+require("plugins/rose-pine")
 require("plugins/neo-tree")
 require("plugins/noice")
 require("plugins/treesitter")

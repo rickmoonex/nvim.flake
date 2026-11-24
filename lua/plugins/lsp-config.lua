@@ -20,6 +20,11 @@ vim.lsp.config("nu-lint", {
 	root_markers = { ".git" },
 })
 vim.lsp.config("zls", {})
+vim.lsp.config("gopls", {
+	settings = {
+		gopls = { staticcheck = true },
+	},
+})
 vim.lsp.config("rust_analyzer", {
 	settings = {
 		["rust-analyzer"] = {
@@ -73,6 +78,7 @@ vim.lsp.enable({
 	"nushell",
 	"nu-lint",
 	"zls",
+	"gopls",
 	"rust_analyzer",
 	"html",
 	"cssls",

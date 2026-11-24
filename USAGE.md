@@ -170,6 +170,9 @@ nvim                    # Start neovim
 nvim myfile.lua         # Open a file
 ```
 
+Go files use `gopls` for completion, navigation, diagnostics (including Staticcheck),
+and formatting. Use `<leader>gf` to format the current buffer.
+
 ---
 
 ## Platform Support

@@ -5,6 +5,15 @@ vim.cmd("set shiftwidth=2")
 vim.cmd("set softtabstop=2")
 vim.g.mapleader = " "
 
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = "go",
+	callback = function()
+		vim.opt_local.expandtab = false
+		vim.opt_local.tabstop = 8
+		vim.opt_local.shiftwidth = 8
+	end,
+})
+
 vim.keymap.set("n", "<c-k>", ":wincmd k<CR>")
 vim.keymap.set("n", "<c-j>", ":wincmd j<CR>")
 vim.keymap.set("n", "<c-h>", ":wincmd h<CR>")

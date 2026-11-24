@@ -1,16 +1,16 @@
-local colors = require("theme.orchid").colors
+local colors = require("theme.rose-pine")
 local devicons = require("nvim-web-devicons")
 
 devicons.setup({ color_icons = true })
 devicons.set_icon({
 	proto = {
 		icon = "󰅪",
-		color = colors.bright_magenta,
+		color = colors.magenta,
 		name = "Proto",
 	},
 })
 
-local icon_palette = { colors.blue, colors.cyan, colors.yellow, colors.bright_magenta }
+local icon_palette = { colors.blue, colors.red, colors.yellow, colors.magenta }
 
 local function rgb(hex)
 	local value = tonumber(hex:sub(2), 16)
@@ -46,8 +46,8 @@ end
 
 apply_icon_palette()
 vim.api.nvim_create_autocmd("ColorScheme", {
-	pattern = "orchid-dark",
-	group = vim.api.nvim_create_augroup("OrchidDevicons", { clear = true }),
+	pattern = "rose-pine",
+	group = vim.api.nvim_create_augroup("RosePineDevicons", { clear = true }),
 	callback = apply_icon_palette,
 })
 

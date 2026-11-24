@@ -18,5 +18,5 @@ require("noice").setup({
 })
 
 require("notify").setup({
-	background_colour = require("theme.orchid").colors.background,
+	background_colour = require("theme.rose-pine").background,
 })
